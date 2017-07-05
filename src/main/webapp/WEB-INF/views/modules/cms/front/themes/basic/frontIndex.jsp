@@ -59,10 +59,19 @@
 .div1 {
 	height: 3px;
 }
+
+div#roll {
+	width: 259px;
+	height: 129px;
+	position: absolute;
+	z-index:9999;
+}
 </style>
 
 <script type="text/javascript">
 	var map;
+	var ggRoll;
+	var interval;
 	$(function() {
 		//一次滚动一屏
 		$('#marquee3').kxbdSuperMarquee({
@@ -93,6 +102,44 @@
 			var p1=$(this).children('option:selected').val();//这就是selected的值 
 			window.open(p1,"link");//页面跳转并传参 
 		}); 
+		ggRoll = {
+				roll : document.getElementById("roll"),
+				speed : 20,
+				statusX : 1,
+				statusY : 1,
+				x : 100,
+				y : 300,
+				winW : document.documentElement.clientWidth
+						- document.getElementById("roll").offsetWidth,
+				winH : document.documentElement.clientHeight
+						- document.getElementById("roll").offsetHeight,
+				Go : function() {
+					console.info(1123);
+					this.roll.style.left = this.x + 'px';
+					this.roll.style.top = this.y + 'px';
+					this.x = this.x + (this.statusX ? -1 : 1)
+					if (this.x < 0) {
+						this.statusX = 0
+					}
+					if (this.x > this.winW) {
+						this.statusX = 1
+					}
+					this.y = this.y + (this.statusY ? -1 : 1)
+					if (this.y < 0) {
+						this.statusY = 0
+					}
+					if (this.y > this.winH) {
+						this.statusY = 1
+					}
+				}
+			}
+			interval = setInterval("ggRoll.Go()", ggRoll.speed);
+			ggRoll.roll.onmouseover = function() {
+				clearInterval(interval)
+			};
+			ggRoll.roll.onmouseout = function() {
+				interval = setInterval("ggRoll.Go()", ggRoll.speed)
+			};
 	});
 
 	function addMarker() {
@@ -102,9 +149,19 @@
 		});
 		marker.setMap(map);
 	}
+	
+	function hidegg(){
+		$('#roll').hide();
+	}
 </script>
 </head>
 <body>
+	<div id="roll">
+		<div style="float: right; width: 20px; height: 20px; background-color:#fff;position: relative;top: 20px;text-align: center;cursor: pointer;"onclick="hidegg();">X</div>
+		<c:forEach items="${fnc:getFlyLink()}" var="flylink">
+		<a href="${flylink.href}" style="width:258px;height:129px;cursor: pointer;" ><img border="0" src="${flylink.image}" /></a>
+		</c:forEach>
+	</div>
 	<table width="940" align="center" cellpadding="0">
 		<tr>
 			<td valign="top"><table width="245" align="right">
@@ -125,7 +182,7 @@
 															var="article">
 															<li><span class="pull-right"><fmt:formatDate value="${article.updateDate}" pattern="yyyy.MM.dd"/></span><a
 																href="${ctx}/view-${article.category.id}-${article.id}${urlSuffix}"
-																style="color:${article.color}">${fns:abbr(article.title,20)}</a></li>
+																style="color:${article.color}">${fns:abbr(article.title,23)}</a></li>
 														</c:forEach>
 													</ul>
 												</c:if>
@@ -135,7 +192,7 @@
 															var="link">
 															<li><a
 																target="_blank" href="${link.href}"
-																style="color:${link.color}">${fns:abbr(link.title,20)}</a></li>
+																style="color:${link.color}">${fns:abbr(link.title,23)}</a></li>
 														</c:forEach>
 													</ul>
 												</c:if>
@@ -191,7 +248,7 @@
 									<div class="marqueebox">
 										<div id="marquee3">
 											<ul style="margin: 0px;">
-											<c:forEach items="${fnc:getArticleList(site.id, tpl.id, 5, '')}" var="article">
+											<c:forEach items="${fnc:getArticleList(site.id, tpl.id, 5, 'image:1')}" var="article">
 													<li><a target="_blank" href="${ctx}/view-${article.category.id}-${article.id}${urlSuffix}" title=""><img style="width: 345px; height: 210px;" src="${article.image}" /></a></li>
 											</c:forEach>
 											</ul>
@@ -207,7 +264,7 @@
 												var="article">
 												<li><span class="pull-right"><fmt:formatDate value="${article.updateDate}" pattern="yyyy.MM.dd"/></span><a
 													href="${ctx}/view-${article.category.id}-${article.id}${urlSuffix}"
-													style="color:${article.color}">${fns:abbr(article.title,40)}</a></li>
+													style="color:${article.color}">${fns:abbr(article.title,36)}</a></li>
 											</c:forEach>
 										</ul>
 									</c:if>
@@ -218,7 +275,7 @@
 												var="link">
 												<li><a
 													target="_blank" href="${link.href}"
-													style="color:${link.color}">${fns:abbr(link.title,40)}</a></li>
+													style="color:${link.color}">${fns:abbr(link.title,36)}</a></li>
 											</c:forEach>
 										</ul>
 									</c:if>
@@ -247,7 +304,7 @@
 										var="article">
 										<li><span class="pull-right"><fmt:formatDate value="${article.updateDate}" pattern="yyyy.MM.dd"/></span><a
 											href="${ctx}/view-${article.category.id}-${article.id}${urlSuffix}"
-											style="color:${article.color}">${fns:abbr(article.title,30)}</a></li>
+											style="color:${article.color}">${fns:abbr(article.title,36)}</a></li>
 									</c:forEach>
 								</ul>
 							</c:if>
@@ -257,7 +314,7 @@
 										var="link">
 										<li><a
 											target="_blank" href="${link.href}"
-											style="color:${link.color}">${fns:abbr(link.title,30)}</a></li>
+											style="color:${link.color}">${fns:abbr(link.title,36)}</a></li>
 									</c:forEach>
 								</ul>
 							</c:if>
